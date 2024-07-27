@@ -6,10 +6,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.MSU.Data.Visualization.Dashboard.Model.Attachment;
 import com.MSU.Data.Visualization.Dashboard.Service.AttachmentService;
@@ -23,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/attachments")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AttachmentController {
 
     private static final Logger logger = LoggerFactory.getLogger(AttachmentController.class);
