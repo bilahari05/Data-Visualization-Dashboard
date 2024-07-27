@@ -15,7 +15,9 @@ import com.MSU.Data.Visualization.Dashboard.Service.DocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File; 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -29,36 +31,39 @@ public class AttachmentController {
     private AttachmentService attachmentService;
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam int uniquId) {
+    public ResponseEntity<Resource> downloadFile(@RequestParam int uniqueId) {
         try {
             // Fetch attachment from the database
-            Attachment attachment = attachmentService.getAttachmentByUserId(uniquId);
+            Attachment attachment = attachmentService.getAttachmentByUserId(uniqueId);
             if (attachment == null) {
-                String errorMessage = "No attachment found for user ID: " + uniquId;
-                logger.error(errorMessage);
+                String errorMessage = "No attachment found for user ID: " + uniqueId;
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
             // Load file from local storage
-            File file = new File(attachment.getFilePath());
+            File file = new File("D:/FileUpload/" + attachment.getFilePath());
             if (!file.exists()) {
                 String errorMessage = "File not found: " + attachment.getFilePath();
-                logger.error(errorMessage);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
             Resource resource = new FileSystemResource(file);
-            String contentType = "application/octet-stream"; // default for unknown types
- 
+            String contentType = Files.probeContentType(file.toPath());
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"");
             headers.add(HttpHeaders.CONTENT_TYPE, contentType);
 
             return new ResponseEntity<>(resource, headers, HttpStatus.OK);
 
+        } catch (IOException e) {
+            String errorMessage = "Failed to determine file type for user ID: " + uniqueId;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         } catch (Exception e) {
-            String errorMessage = "Failed to download file for user ID: " + uniquId;
-            logger.error(errorMessage, e);
+            String errorMessage = "Failed to download file for user ID: " + uniqueId;
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

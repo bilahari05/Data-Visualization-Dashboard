@@ -1,5 +1,5 @@
 import axiosInstance from "../DataService/DataService";
-import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, FILE_UPLOAD_ENDPOINT, REPORT_ENDPOINT } from "../constants/constants";
+import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, FILE_UPLOAD_ENDPOINT, REPORT_ENDPOINT, DOWNLOAD_ENDPOINT } from "../constants/constants";
 
 export const loginService = {
   login(username, password) {
@@ -30,7 +30,7 @@ export const fileUploadService = {
   uploadFile(formData) {
     const userId = sessionStorage.getItem("userId");
     formData.append("userId", userId);
-    formData.append("Status",1);
+    formData.append("Status", 1);
 
     return axiosInstance.post(FILE_UPLOAD_ENDPOINT, formData, {
       headers: {
@@ -40,14 +40,22 @@ export const fileUploadService = {
   },
 };
 
-
 export const attachmentService = {
-  getReport(status){
+  getReport(status) {
     return axiosInstance.get(REPORT_ENDPOINT, {
       params: {
         "userId": sessionStorage.getItem("userId"),
         "status": status,
       }
+    });
+  },
+
+  downloadFile(uniqueId) {
+    return axiosInstance.get(DOWNLOAD_ENDPOINT, {
+      params: {
+        uniquId: uniqueId,
+      },
+      responseType: 'blob' 
     });
   }
 };
