@@ -1,5 +1,5 @@
 import axiosInstance from "../DataService/DataService";
-import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, FILE_UPLOAD_ENDPOINT, REPORT_ENDPOINT, DOWNLOAD_ENDPOINT } from "../constants/constants";
+import { LOGIN_ENDPOINT, REGISTER_ENDPOINT, FILE_UPLOAD_ENDPOINT, REPORT_ENDPOINT, DOWNLOAD_ENDPOINT, PROFILE_ENDPOINT } from "../constants/constants";
 
 export const loginService = {
   login(username, password) {
@@ -22,7 +22,21 @@ export const loginService = {
 
   register(username, phoneNumber, email, password) {
     const role = "";
-    return axiosInstance.post(REGISTER_ENDPOINT, { username, phoneNumber, email, password, role });
+    const userId = sessionStorage.getItem("userId");
+
+    const payload = {
+      username,
+      phoneNumber,
+      email,
+      password,
+      role
+    };
+
+    if (userId) {
+      payload.userId = userId;
+    }
+
+    return axiosInstance.post(REGISTER_ENDPOINT, payload);
   },
 };
 
@@ -57,4 +71,10 @@ export const attachmentService = {
       },
     });
   }
+};
+
+export const profileService = {
+  getProfile(userId) {
+    return axiosInstance.post(PROFILE_ENDPOINT, { userId });
+  },
 };

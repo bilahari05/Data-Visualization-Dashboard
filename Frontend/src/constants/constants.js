@@ -13,3 +13,5 @@ export const FILE_UPLOAD_ENDPOINT = `${UPLOAD_URL}/upload/excel`;
 export const REPORT_ENDPOINT = `${ATTACHMENT_URL}/attachments`
 
 export const DOWNLOAD_ENDPOINT = `${ATTACHMENT_URL}/download`
+
+export const PROFILE_ENDPOINT = `${API_BASE_URL}/profile`;

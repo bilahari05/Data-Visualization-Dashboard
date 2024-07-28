@@ -50,6 +50,7 @@ import BarGraphUpload from "components/FileUpload/BarGraphUpload";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
+import ProfileUpdate from "components/ProfileUpdate/ProfileUpdate";
 
 const routes = [
   {
@@ -94,11 +95,19 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "Report",
+    key: "report",
+    icon: <Icon fontSize="small">table_view</Icon>,
+    route: "/report",
+    component: <Profile />,
+  },
+  {
+    type: "collapse",
     name: "Profile",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
-    component: <Profile />,
+    component: <ProfileUpdate />,
   },
   {
     type: "collapse",
