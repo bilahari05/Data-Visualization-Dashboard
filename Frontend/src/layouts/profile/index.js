@@ -11,7 +11,7 @@ function Overview() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [status, setStatus] = useState(null); 
+  const [status, setStatus] = useState(null);
   const [open, setOpen] = useState(false);
   const [fileContent, setFileContent] = useState(null);
   const [fileType, setFileType] = useState(null);
@@ -21,7 +21,7 @@ function Overview() {
     try {
       const response = await attachmentService.getReport(status);
       setReport(response.data);
-      setStatus(status); 
+      setStatus(status);
     } catch (err) {
       setError(err);
     } finally {
@@ -29,39 +29,26 @@ function Overview() {
     }
   };
 
-  const handleView = (filePath) => {
+  const handleView = (uniqueId, filePath) => {
     const fileExtension = filePath.split('.').pop().toLowerCase();
     const isPdf = fileExtension === 'pdf';
     const isXls = fileExtension === 'xls' || fileExtension === 'xlsx';
 
     if (isPdf || isXls) {
-      fetchFileContent(filePath, isPdf ? 'pdf' : 'xls');
+      fetchFileContent(uniqueId, isPdf ? 'pdf' : 'xls');
     } else {
       console.error('Unsupported file type');
     }
   };
 
-  const handleDownload = async (fileName) => {
+  const fetchFileContent = async (uniqueId, type) => {
     try {
-      const response = await attachmentService.downloadFile(fileName);
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileName); 
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-    } catch (error) {
-      console.error('Error downloading file:', error);
-    }
-  };
+      const response = await attachmentService.downloadFile(uniqueId, { responseType: 'blob' }); 
+      console.log("BLOB",response);
+      const fileBlob = new Blob([response.data], { type: response.headers['content-type'] });
 
-  const fetchFileContent = async (filePath, type) => {
-    try {
-      const response = await attachmentService.downloadFile(filePath); 
-      const fileBlob = new Blob([response.data], { type: type === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       setFileType(type);
-      setFileContent(URL.createObjectURL(fileBlob));
+      setFileContent(fileBlob);
       setOpen(true);
     } catch (err) {
       console.error("Error fetching file content", err);
@@ -77,7 +64,7 @@ function Overview() {
   const renderFileContent = () => {
     if (fileType === 'pdf') {
       return (
-        <Document file={fileContent}>
+        <Document file={URL.createObjectURL(fileContent)}>
           <Page pageNumber={1} />
         </Document>
       );
@@ -152,11 +139,8 @@ function Overview() {
                     <TableRow key={file.id}>
                       <TableCell>{file.filePath}</TableCell>
                       <TableCell>
-                        <Button onClick={() => handleView(file.filePath)} variant="contained" color="primary" sx={{ marginRight: "10px" }}>
+                        <Button onClick={() => handleView(file.uniquId, file.filePath)} variant="contained" color="primary">
                           View
-                        </Button>
-                        <Button onClick={() => handleDownload(file.filePath)} variant="contained" color="secondary">
-                          Download
                         </Button>
                       </TableCell>
                     </TableRow>

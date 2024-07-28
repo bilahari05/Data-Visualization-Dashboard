@@ -53,9 +53,8 @@ export const attachmentService = {
   downloadFile(uniqueId) {
     return axiosInstance.get(DOWNLOAD_ENDPOINT, {
       params: {
-        uniquId: uniqueId,
+        "uniquId": uniqueId,
       },
-      responseType: 'blob' 
     });
   }
 };
