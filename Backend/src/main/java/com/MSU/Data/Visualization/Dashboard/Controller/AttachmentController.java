@@ -6,7 +6,14 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Base64;
 
 import com.MSU.Data.Visualization.Dashboard.Model.Attachment;
 import com.MSU.Data.Visualization.Dashboard.Service.AttachmentService;
@@ -16,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -31,43 +36,38 @@ public class AttachmentController {
     private AttachmentService attachmentService;
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam int uniqueId) {
+    public ResponseEntity<String> downloadFile(@RequestParam int uniquId) {
         try {
             // Fetch attachment from the database
-            Attachment attachment = attachmentService.getAttachmentByUserId(uniqueId);
+            Attachment attachment = attachmentService.getAttachmentByUserId(uniquId);
             if (attachment == null) {
-                String errorMessage = "No attachment found for user ID: " + uniqueId;
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                String errorMessage = "No attachment found for user ID: " + uniquId;
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
             }
 
             // Load file from local storage
-            File file = new File("D:/FileUpload/" + attachment.getFilePath());
+            File file = new File(attachment.getFilePath());
             if (!file.exists()) {
                 String errorMessage = "File not found: " + attachment.getFilePath();
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
             }
 
-            Resource resource = new FileSystemResource(file);
-            String contentType = Files.probeContentType(file.toPath());
-            if (contentType == null) {
-                contentType = "application/octet-stream";
-            }
+            byte[] fileBytes = Files.readAllBytes(file.toPath());
+            String base64File = Base64.getEncoder().encodeToString(fileBytes);
+            String mimeType = Files.probeContentType(file.toPath());
+            mimeType = mimeType == null ? "application/octet-stream" : mimeType;
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"");
-            headers.add(HttpHeaders.CONTENT_TYPE, contentType);
+            headers.add("File-Name", file.getName());
+            headers.add(HttpHeaders.CONTENT_TYPE, mimeType);
 
-            return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+            return ResponseEntity.ok().headers(headers).body(base64File);
 
-        } catch (IOException e) {
-            String errorMessage = "Failed to determine file type for user ID: " + uniqueId;
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         } catch (Exception e) {
-            String errorMessage = "Failed to download file for user ID: " + uniqueId;
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            String errorMessage = "Failed to download file for user ID: " + uniquId;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
-    
     @GetMapping("/attachments")
     public ResponseEntity<List<Attachment>> getAttachmentsByUserIdAndStatus(
             @RequestParam Long userId,
@@ -75,7 +75,7 @@ public class AttachmentController {
 
         List<Attachment> attachments = attachmentService.findAttachmentsByUserIdAndStatus(userId, status);
 
-        if (attachments != null && !attachments.isEmpty()) {
+        if (attachments != null || !attachments.isEmpty()) {
             return ResponseEntity.ok(attachments);
         } else {
             return ResponseEntity.notFound().build();

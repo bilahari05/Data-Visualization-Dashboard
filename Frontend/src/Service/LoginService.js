@@ -33,7 +33,7 @@ export const loginService = {
     };
 
     if (userId) {
-      payload.userId = userId;
+      payload.id = userId;
     }
 
     return axiosInstance.post(REGISTER_ENDPOINT, payload);
@@ -45,6 +45,18 @@ export const fileUploadService = {
     const userId = sessionStorage.getItem("userId");
     formData.append("userId", userId);
     formData.append("Status", 1);
+
+    return axiosInstance.post(FILE_UPLOAD_ENDPOINT, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
+  downloadFile(formData) {
+    const userId = sessionStorage.getItem("userId");
+    formData.append("userId", userId);
+    formData.append("Status", 0);
 
     return axiosInstance.post(FILE_UPLOAD_ENDPOINT, formData, {
       headers: {
@@ -74,7 +86,7 @@ export const attachmentService = {
 };
 
 export const profileService = {
-  getProfile(userId) {
-    return axiosInstance.post(PROFILE_ENDPOINT, { userId });
+  getProfile(id) {
+    return axiosInstance.post(PROFILE_ENDPOINT,  id );
   },
 };

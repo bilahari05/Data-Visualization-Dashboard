@@ -1,10 +1,9 @@
 package com.MSU.Data.Visualization.Dashboard.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+import com.drew.lang.StringUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +15,7 @@ import com.MSU.Data.Visualization.Dashboard.Payload.Response.ApiResponse;
 import com.MSU.Data.Visualization.Dashboard.Repository.UserRepository;
 import com.MSU.Data.Visualization.Dashboard.Response.ResponseUtils;
 
+@Transactional
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -27,25 +27,35 @@ public class UserServiceImpl implements UserService {
 	public ResponseEntity<?> registerUser(User user) {
 		try {
 			User foundUser = userRepository.findByUsername(user.getUsername());
+			Optional<User> foundUserId = Optional.empty();
 
-			if (foundUser != null) {
-				throw new UserAlreadyExistsException("UserName already exists : " + user.getUsername());
+			if (user.getId() != null) {
+				foundUserId = userRepository.findById(user.getId());
 			}
+
+			if (foundUser != null && (user.getId() == null || !user.getId().equals(foundUser.getId()))) {
+				throw new UserAlreadyExistsException("Username already exists: " + user.getUsername());
+			}
+
 			List<User> usersWithSameRole = userRepository.findByRole(user.getRole());
-			//
+
 			if (usersWithSameRole != null) {
-				// Check if the existing user has the same role
 				for (User existingUser : usersWithSameRole) {
-					if (existingUser.getRole().equals(user.getRole())) {
-						if (existingUser.getRole().equals("Admin")) {
-							throw new UserAlreadyExistsException(
-									"User already exists with role: " + user.getUsername());
-						}
+					if (existingUser.getRole().equals("Admin")) {
+						throw new UserAlreadyExistsException(
+								"User already exists with role: " + user.getUsername());
 					}
 				}
 			}
-			// Encode the password and save the new user
-			user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+			if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+				user.setPassword(passwordEncoder.encode(user.getPassword()));
+			} else if (foundUserId.isPresent()) {
+				user.setPassword(foundUserId.get().getPassword());
+			} else {
+				throw new IllegalArgumentException("Password cannot be empty for a new user");
+			}
+
 			User savedUser = userRepository.save(user);
 			String reason = "Registration successful";
 			Map<String, Object> responseBody = createSuccessResponse(savedUser, reason);
@@ -60,6 +70,7 @@ public class UserServiceImpl implements UserService {
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
 
 	public ResponseEntity<?> authenticateUser(User user) {
 

@@ -39,7 +39,7 @@ const monthMapping = {
 };
 
 // Fields where search should be used instead of range filtering
-const searchFields = ["Name", "Address", "Email", "Phone number"];
+const searchFields = ["Name", "Address", "Email", "Phone number","Product Name"];
 
 const GraphUpload = () => {
   const [file, setFile] = useState(null);
@@ -164,12 +164,37 @@ const GraphUpload = () => {
     setCurrentPage(value);
   };
 
-  const handleDownload = () => {
+  // const handleDownload = () => {
+  //   const worksheet = XLSX.utils.json_to_sheet(filteredData);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Data");
+  //   XLSX.writeFile(workbook, "filtered_data.xlsx");
+  // };
+
+  const handleDownload = async () => {
+    // Create Excel file
     const worksheet = XLSX.utils.json_to_sheet(filteredData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Filtered Data");
     XLSX.writeFile(workbook, "filtered_data.xlsx");
+    // Convert Excel file to binary
+    const excelBinary = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  
+    // Create Blob from binary
+    const excelBlob = new Blob([excelBinary], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const formData = new FormData();
+    formData.append("file", excelBlob, "filtered_data.xlsx");
+  
+    // Upload Excel file to server
+    try {
+      const response = await fileUploadService.uploadFile(formData);
+      console.log("Excel upload response:", response.data);
+    } catch (error) {
+      console.error("Error uploading Excel:", error);
+    }
+  
   };
+  
 
   const renderTable = () => {
     const hasData = Array.isArray(filteredData) && filteredData.length > 0;

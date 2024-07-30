@@ -179,6 +179,17 @@ const BarGraphUpload = () => {
     });
 
     pdf.save("chart_with_report.pdf");
+
+    const pdfBlob = pdf.output('blob');
+    const formData = new FormData();
+    formData.append("file", pdfBlob, "chart_with_report.pdf");
+
+    try {
+      const response = await fileUploadService.downloadFile(formData);
+      console.log("PDF upload response:", response.data);
+    } catch (error) {
+      console.error("Error uploading PDF:", error);
+    }
   };
 
   return (
@@ -234,6 +245,7 @@ const BarGraphUpload = () => {
                         borderRadius: "8px",
                         padding: "8px 16px",
                         fontWeight: "bold",
+                        color:"#FFF",
                         backgroundColor: "#1976d2",
                         "&:hover": {
                           backgroundColor: "#115293",
@@ -257,6 +269,7 @@ const BarGraphUpload = () => {
                       padding: "8px 16px",
                       fontWeight: "bold",
                       backgroundColor: "#dc004e",
+                      color:"#FFF",
                       "&:hover": {
                         backgroundColor: "#9a0036",
                       },
@@ -323,6 +336,7 @@ const BarGraphUpload = () => {
                 padding: "8px 16px",
                 fontWeight: "bold",
                 backgroundColor: "#388e3c",
+                color:"#FFF",
                 "&:hover": {
                   backgroundColor: "#2e7d32",
                 },

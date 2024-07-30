@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Card from '@mui/material/Card';
-import Checkbox from '@mui/material/Checkbox';
-import MDBox from 'components/MDBox';
-import MDTypography from 'components/MDTypography';
-import MDInput from 'components/MDInput';
-import MDButton from 'components/MDButton';
-import CoverLayout from 'layouts/authentication/components/CoverLayout';
-import bgImage from 'assets/images/bg-sign-up-cover.jpeg';
-import { Button } from '@mui/material';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Card from "@mui/material/Card";
+import Checkbox from "@mui/material/Checkbox";
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+import MDInput from "components/MDInput";
+import MDButton from "components/MDButton";
+import CoverLayout from "layouts/authentication/components/CoverLayout";
+import bgImage from "assets/images/bg-sign-up-cover.jpeg";
+import { Button } from "@mui/material";
 import { loginService } from "../../../Service/LoginService";
 
 function Cover() {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const [nameError, setNameError] = useState('');
-  const [phoneError, setPhoneError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [termsError, setTermsError] = useState('');
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [termsError, setTermsError] = useState("");
 
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -50,65 +50,70 @@ function Cover() {
     let isValid = true;
 
     if (!name) {
-      setNameError('Name is required');
+      setNameError("Name is required");
       isValid = false;
     } else if (!validateName(name)) {
-      setNameError('Name can only contain letters and spaces');
+      setNameError("Name can only contain letters and spaces");
       isValid = false;
     } else {
-      setNameError('');
+      setNameError("");
     }
 
     if (!phone) {
-      setPhoneError('Phone number is required');
+      setPhoneError("Phone number is required");
       isValid = false;
     } else if (!validatePhone(phone)) {
-      setPhoneError('Phone number must be 10 digits');
+      setPhoneError("Phone number must be 10 digits");
       isValid = false;
     } else {
-      setPhoneError('');
+      setPhoneError("");
     }
 
     if (!email) {
-      setEmailError('Email is required');
+      setEmailError("Email is required");
       isValid = false;
     } else if (!validateEmail(email)) {
-      setEmailError('Invalid email format');
+      setEmailError("Invalid email format");
       isValid = false;
     } else {
-      setEmailError('');
+      setEmailError("");
     }
 
     if (!password) {
-      setPasswordError('Password is required');
+      setPasswordError("Password is required");
       isValid = false;
     } else if (!validatePassword(password)) {
-      setPasswordError('Password must be at least 8 characters, include uppercase, lowercase, number, and special character');
+      setPasswordError(
+        "Password must be at least 8 characters, include uppercase, lowercase, number, and special character"
+      );
       isValid = false;
     } else {
-      setPasswordError('');
+      setPasswordError("");
     }
 
     if (!termsAccepted) {
-      setTermsError('You must accept the terms and conditions');
+      setTermsError("You must accept the terms and conditions");
       isValid = false;
     } else {
-      setTermsError('');
+      setTermsError("");
     }
 
     if (isValid) {
-      loginService.register(name, phone, email, password).then((res) => {
-        const resData = res.data.apiResponse;
-        console.log(resData, "resData");
-        if (resData.responseCode === "SC") {
-          setSuccessMessage("Saved successfully");
-          setTimeout(() => {
-            navigate('/authentication/sign-in');
-          }, 2000);
-        }
-      }).catch((err) => {
-        console.error(err);
-      });
+      loginService
+        .register(name, phone, email, password)
+        .then((res) => {
+          const resData = res.data.apiResponse;
+          console.log(resData, "resData");
+          if (resData.responseCode === "SC") {
+            setSuccessMessage("Saved successfully");
+            setTimeout(() => {
+              navigate("/authentication/sign-in");
+            }, 2000);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     }
   };
 
@@ -184,12 +189,15 @@ function Cover() {
               />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
-              <Checkbox checked={termsAccepted} onChange={(e) => setTermsAccepted(e.target.checked)} />
+              <Checkbox
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+              />
               <MDTypography
                 variant="button"
                 fontWeight="regular"
                 color="text"
-                sx={{ cursor: 'pointer', userSelect: 'none', ml: -1 }}
+                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
               >
                 &nbsp;&nbsp;I agree the&nbsp;
               </MDTypography>
@@ -212,11 +220,7 @@ function Cover() {
               </MDBox>
             )}
             <MDBox mt={4} mb={1}>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-              >
+              <Button variant="contained" color="primary" sx={{ color: "#FFF" }} type="submit">
                 Sign Up
               </Button>
             </MDBox>
@@ -229,7 +233,7 @@ function Cover() {
             )}
             <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <MDTypography
                   component={Link}
                   to="/authentication/sign-in"

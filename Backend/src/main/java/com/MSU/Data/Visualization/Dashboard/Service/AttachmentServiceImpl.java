@@ -33,10 +33,11 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public Attachment saveAttachment(Long userId, String filePath, int id) {
         try {
-        	 String uniqueId = UUID.randomUUID().toString();
+        	// String uniqueId = UUID.randomUUID().toString();
+        	int uniqueId =generateFourDigitUniqueId();
             Attachment attachment = new Attachment(userId, filePath);
             attachment.setStatus(id);
-            attachment.setUniquId( Integer.parseInt(uniqueId));
+            attachment.setUniquId(uniqueId);
             return attachmentRepository.save(attachment);
         } catch (Exception e) {
             String errorMessage = "Failed to save attachment for user ID: " + userId;
@@ -101,4 +102,18 @@ public class AttachmentServiceImpl implements AttachmentService {
             return null;
         }
     }
+    
+    public static int generateFourDigitUniqueId() {
+        // Generate a UUID and extract the first 4 digits from it
+        String uniqueId = UUID.randomUUID().toString().replaceAll("[^0-9]", "");
+        
+        // If the generated number is less than 4 digits, pad with leading zeros
+        if (uniqueId.length() < 4) {
+            uniqueId = String.format("%04d", Integer.parseInt(uniqueId));
+        }
+
+        // Convert the first 4 digits to an integer and return
+        return Integer.parseInt(uniqueId.substring(0, 4));
+    }
+
 }

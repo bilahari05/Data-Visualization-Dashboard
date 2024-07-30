@@ -14,6 +14,10 @@ public class DocumentData {
 
     private String data;
     
+	private long userId;
+    
+    private String documentId; // New field for document identification
+    
     public int getStatus() {
 		return Status;
 	}
@@ -31,10 +35,6 @@ public class DocumentData {
 	public void setUserId(long userId) {
 		this.userId = userId;
 	}
-
-	private long userId;
-    
-    private String documentId; // New field for document identification
 
     // Getters and Setters
     public Long getId() {

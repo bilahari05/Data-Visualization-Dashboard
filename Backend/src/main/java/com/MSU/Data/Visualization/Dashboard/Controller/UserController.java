@@ -46,8 +46,8 @@ public class UserController {
     }
     
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+    @PostMapping("/profile")
+    public ResponseEntity<?> getUserById(@RequestBody Long id) {
         Optional<User> user = userService.findUserById(id);
 
         if (user.isPresent()) {

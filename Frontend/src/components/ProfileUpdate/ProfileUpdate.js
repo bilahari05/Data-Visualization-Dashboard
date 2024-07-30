@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
-import Checkbox from "@mui/material/Checkbox";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
@@ -16,13 +15,11 @@ function ProfileUpdate() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [termsError, setTermsError] = useState("");
 
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -103,13 +100,6 @@ function ProfileUpdate() {
       isValid = false;
     } else {
       setPasswordError("");
-    }
-
-    if (!termsAccepted) {
-      setTermsError("You must accept the terms and conditions");
-      isValid = false;
-    } else {
-      setTermsError("");
     }
 
     if (isValid) {
@@ -199,39 +189,8 @@ function ProfileUpdate() {
                   helperText={passwordError}
                 />
               </MDBox>
-              <MDBox display="flex" alignItems="center" ml={-1}>
-                <Checkbox
-                  checked={termsAccepted}
-                  onChange={(e) => setTermsAccepted(e.target.checked)}
-                />
-                <MDTypography
-                  variant="button"
-                  fontWeight="regular"
-                  color="text"
-                  sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
-                >
-                  &nbsp;&nbsp;I agree to the&nbsp;
-                </MDTypography>
-                <MDTypography
-                  component="a"
-                  href="#"
-                  variant="button"
-                  fontWeight="bold"
-                  color="info"
-                  textGradient
-                >
-                  Terms and Conditions
-                </MDTypography>
-              </MDBox>
-              {termsError && (
-                <MDBox mt={1} mb={1} textAlign="center">
-                  <MDTypography variant="button" color="error">
-                    {termsError}
-                  </MDTypography>
-                </MDBox>
-              )}
               <MDBox mt={4} mb={1}>
-                <Button variant="contained" color="primary" type="submit">
+                <Button variant="contained" color="primary" type="submit" sx={{ color:"#FFF" }}>
                   Update Profile
                 </Button>
               </MDBox>

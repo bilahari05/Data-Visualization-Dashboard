@@ -15,7 +15,7 @@ import MDInput from "components/MDInput";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 import { loginService } from "../../../Service/LoginService";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import Dashboard from "layouts/dashboard";
 
 function Basic() {
@@ -58,9 +58,9 @@ function Basic() {
       loginService
         .login(username, password)
         .then((res) => {
-            const data = res.data.user;
-            const resdata = res.data;
-            navigate('/dashboard', { state: { userData: data } });
+          const data = res.data.user;
+          const resdata = res.data;
+          navigate("/dashboard", { state: { userData: data } });
         })
         .catch((err) => {
           setErrorMessage("Login failed. Please try again.");
@@ -142,15 +142,14 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-            <Button
-  variant="contained"
-  color="primary"
-  onClick={handleSearch}
->
-  Sign in
-</Button>
-
-
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ color: "#FFF" }}
+                onClick={handleSearch}
+              >
+                Sign in
+              </Button>
             </MDBox>
             {errorMessage && (
               <MDBox mt={2} mb={1} textAlign="center">

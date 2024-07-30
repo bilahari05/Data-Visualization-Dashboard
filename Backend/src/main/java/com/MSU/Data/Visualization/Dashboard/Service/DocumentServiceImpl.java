@@ -54,7 +54,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 		List<List<Object>> data;
 		try {
-			data = readExcelData(file);
+			data = readExcelData(file,userId,id);
 		} catch (Exception e) {
 			e.printStackTrace();
 			ApiResponse apiResponse = faildResponse("Failed to read Excel data.");
@@ -79,7 +79,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 	}
 
-	public List<List<Object>> readExcelData(MultipartFile file) {
+	public List<List<Object>> readExcelData(MultipartFile file,Long userId,int id) {
 		List<List<Object>> data;
 		String documentId = generateDocumentId();
 		try {
@@ -93,6 +93,8 @@ public class DocumentServiceImpl implements DocumentService {
 			DocumentData documentData = new DocumentData();
 			documentData.setData(row.toString());
 			documentData.setDocumentId(documentId);
+			documentData.setUserId(userId);
+			documentData.setStatus(id);
 			documentDataRepository.save(documentData);
 		});
 
