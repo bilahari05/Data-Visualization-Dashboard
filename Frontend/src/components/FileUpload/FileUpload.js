@@ -21,6 +21,7 @@ import {
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import { fileUploadService } from "../../Service/LoginService";
 import * as XLSX from "xlsx";
+import { Alert } from '@mui/material';
 
 // Mapping of month names to their numeric values
 const monthMapping = {
@@ -235,12 +236,9 @@ const GraphUpload = () => {
             </Select>
 
             {filterField && searchFields.includes(filterField) && (
-              <TextField
-                label="Search"
-                value={searchValue}
-                onChange={handleSearchChange}
-                sx={{ height: "45px", marginRight: "16px", width: "25%" }}
-              />
+              <Alert severity="info" sx={{ width: "100%", marginBottom: "16px", marginTop: "15px" }}>
+              We are not using an AI model, so word filtering by text input is not available.
+            </Alert>
             )}
 
             {filterField && filterField === "Month" && (
